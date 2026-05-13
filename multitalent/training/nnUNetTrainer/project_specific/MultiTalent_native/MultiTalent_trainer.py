@@ -103,7 +103,9 @@ class MultiTalent_trainer(nnUNetTrainer):
             assert type(d) == str
             dataset_tmp = load_json(join(nnUNet_preprocessed, maybe_convert_to_dataset_name(d), 'dataset.json'))
             self.num_cases_per_dataset[d] = dataset_tmp["numTraining"]
-            label_tmp = dict(sorted(dataset_tmp['labels'].items(), key=lambda item: item[1]))
+            # Support region-based labels where values can be lists (e.g. KiTS2023: {"kidney": [1,2,3]})
+            label_tmp = dict(sorted(dataset_tmp['labels'].items(),
+                                    key=lambda item: item[1] if isinstance(item[1], int) else min(item[1])))
             if len(label_tmp.keys()) > self.max_classes:
                 splits, _ = split_dict_with_background(label_tmp, self.max_classes)
                 for c,v in enumerate(splits):
