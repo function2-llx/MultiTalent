@@ -1332,10 +1332,13 @@ class MultiTalent_trainer(nnUNetTrainer):
     def perform_actual_validation(self, save_probabilities: bool = False):
         self.set_deep_supervision_enabled(False)
         self.network.eval()
-        target_json = load_json(join(self.preprocessed_dataset_folder_base, 'val_datasets.json'))
+        val_datasets_file = join(self.preprocessed_dataset_folder_base, 'val_datasets.json')
+        if isfile(val_datasets_file):
+            target_ids = set(load_json(val_datasets_file)['dataset_ids'])
+        else:
+            target_ids = set(self.all_ids)
         for id in self.all_ids:
-            #custumn
-            if id in target_json['dataset_ids']:
+            if id in target_ids:
                 predictor = nnUNetPredictor_MT(tile_step_size=0.5, use_gaussian=True, use_mirroring=True,
                                             perform_everything_on_device=True, device=self.device, verbose=False,
                                             verbose_preprocessing=False, allow_tqdm=False, target_dataset_id=id)
