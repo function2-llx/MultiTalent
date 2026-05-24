@@ -30,7 +30,7 @@ class LabelManager(object):
             self._has_regions = False
         else:
             self._has_regions: bool = any(
-                [isinstance(i, (tuple, list)) and len(i) > 1 for i in self.label_dict.values()])
+                [isinstance(i, (tuple, list)) for i in self.label_dict.values()])
 
         self._ignore_label: Union[None, int] = self._determine_ignore_label()
         self._all_labels: List[int] = self._get_all_labels()
@@ -245,7 +245,7 @@ class LabelManager_MT(object):
             self._has_regions = False
         else:
             self._has_regions: bool = any(
-                [isinstance(i, (tuple, list)) and len(i) > 1 for i in self.label_dict.values()])
+                [isinstance(i, (tuple, list)) for i in self.label_dict.values()])
 
         self._ignore_label: Union[None, int] = self._determine_ignore_label()
         self._all_labels: List[int] = self._get_all_labels()
