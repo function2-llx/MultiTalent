@@ -130,7 +130,9 @@ class MultiTalent_trainer(nnUNetTrainer):
                                 new_labels[k] = _wrap(remapped, v[k])
                         else:
                             new_labels[k] = v[k]
-                        dataset_tmp["labels"] = new_labels
+                    dataset_tmp["labels"] = new_labels
+                    num_fg = len([k for k in new_labels if k != 'background'])
+                    dataset_tmp["regions_class_order"] = list(range(1, num_fg + 1))
 
                     save_json(dataset_tmp, join(nnUNet_preprocessed, maybe_convert_to_dataset_name(d), d + '_%d_dataset.json' %c ))
             else:
