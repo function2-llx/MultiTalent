@@ -111,16 +111,23 @@ class MultiTalent_trainer(nnUNetTrainer):
                 for c,v in enumerate(splits):
                     self.all_ids.append(d + '_%d' %c)
                     self.labelmapping[d + '_%d' %c] = []
-                    nonzero_values = [value for value in v.values() if value != 0]
+                    # Extract int values for arithmetic (handles both int and [int] formats)
+                    def _val(x):
+                        return x[0] if isinstance(x, list) else x
+                    def _wrap(x, ref):
+                        return [x] if isinstance(ref, list) else x
+                    nonzero_values = [_val(value) for value in v.values() if value != 0]
                     new_labels = {}
                     for k in v.keys():
                         if k != 'background':
+                            orig = _val(v[k])
                             if c == 0:
-                                self.labelmapping[d + '_%d' %c].append([v[k],v[k]])
+                                self.labelmapping[d + '_%d' %c].append([orig, orig])
                                 new_labels[k] = v[k]
                             else:
-                                self.labelmapping[d + '_%d' %c].append([v[k], v[k] - (min(nonzero_values)-1)])
-                                new_labels[k] = v[k] - (min(nonzero_values) - 1)
+                                remapped = orig - (min(nonzero_values) - 1)
+                                self.labelmapping[d + '_%d' %c].append([orig, remapped])
+                                new_labels[k] = _wrap(remapped, v[k])
                         else:
                             new_labels[k] = v[k]
                         dataset_tmp["labels"] = new_labels
