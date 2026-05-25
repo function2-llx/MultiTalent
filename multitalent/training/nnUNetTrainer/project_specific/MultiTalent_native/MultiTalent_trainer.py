@@ -314,10 +314,8 @@ class MultiTalent_trainer(nnUNetTrainer):
 
                 self.all_num_seg_heads = {}
                 for id in self.all_ids:
-                    #custumn change for the datasets that have a high number of classes to not run in OOM GPU
                     if '_' in id:
-                        self.all_num_seg_heads[id] = len(self.labelmapping[id])+1
-
+                        self.all_num_seg_heads[id] = len(self.labelmapping[id])
                     else:
                         self.all_num_seg_heads[id] = self.label_managers[id].num_segmentation_heads
 
